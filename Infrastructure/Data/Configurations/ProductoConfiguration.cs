@@ -27,6 +27,11 @@ public class ProductoConfiguration : IEntityTypeConfiguration<Producto>
             .Property(p => p.Precio)
             .HasColumnType("decimal(18,2)");
 
+        
+        builder
+            .Property(p => p.FechaCreacion)
+            .HasColumnType("timestamp");
+
 
         builder
             .HasOne(p => p.Marca)
@@ -37,6 +42,6 @@ public class ProductoConfiguration : IEntityTypeConfiguration<Producto>
         builder
             .HasOne(p => p.Categoria)
             .WithMany(c => c.Productos)
-            .HasForeignKey(p => p.CategoriaId);
+            .HasForeignKey(p => p.CategoriaId); 
     }
 }

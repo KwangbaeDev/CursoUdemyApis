@@ -21,5 +21,19 @@ public class TiendaContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        // Configura todas las propiedades de tipo DateTime para que se mapeen como timestamp en PostgreSQL
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.ClrType == typeof(DateTime))
+                {
+                    property.SetColumnType("timestamp");
+                }
+            }
+        }
     }
+
+    
 }
