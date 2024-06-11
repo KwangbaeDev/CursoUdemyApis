@@ -15,8 +15,6 @@ public class TiendaContext : DbContext
     public DbSet<Categoria> Categorias { get; set; }
 
 
-
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -34,6 +32,4 @@ public class TiendaContext : DbContext
             }
         }
     }
-
-    
 }

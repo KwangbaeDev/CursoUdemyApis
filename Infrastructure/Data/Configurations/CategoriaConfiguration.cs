@@ -14,8 +14,8 @@ public class CategoriaConfiguration : IEntityTypeConfiguration<Categoria>
 
 
         builder
-            .Property(c => c.Id)
-            .IsRequired();
+            .HasKey(c => c.Id)
+            .HasName("Categoria_pkey");
 
         
         builder

@@ -15,15 +15,15 @@ public class UnitOfWork : IUnitOfWork , IDisposable
     {
         _context = context;
     }
-    public IProductoRepository Productos
+    public ICategoriaRepository Categorias
     {
         get
         {
-            if (_productos == null)
+            if (_categorias == null)
             {
-                _productos = new ProductoRepository(_context);
+                _categorias = new CategoriaRepository(_context);
             }
-            return _productos;
+            return _categorias;
         }
     }
 
@@ -39,21 +39,20 @@ public class UnitOfWork : IUnitOfWork , IDisposable
         }
     }
 
-    public ICategoriaRepository Categorias
+    public IProductoRepository Productos
     {
         get
         {
-            if (_categorias == null)
+            if (_productos == null)
             {
-                _categorias = new CategoriaRepository(_context);
+                _productos = new ProductoRepository(_context);
             }
-            return _categorias;
+            return _productos;
         }
     }
-
-    public int Save()
+    public async Task<int> SaveAsync()
     {
-        return _context.SaveChanges();
+        return await _context.SaveChangesAsync();
     }
 
     public void Dispose()

@@ -3,7 +3,6 @@ using System.Reflection;
 using Core.Entities;
 using CsvHelper;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Infrastructure.Data;
 

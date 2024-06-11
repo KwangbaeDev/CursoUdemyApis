@@ -1,3 +1,5 @@
+using Core.Entities;
+
 namespace Core.Interfaces;
 
 public interface IUnitOfWork
@@ -5,5 +7,5 @@ public interface IUnitOfWork
     IProductoRepository Productos { get; }
     IMarcaRepository Marcas { get; }
     ICategoriaRepository Categorias { get; }
-    int Save();
+    Task<int> SaveAsync();
 }

@@ -1,12 +1,18 @@
+using System.Reflection;
 using API.Extensions;
+using AspNetCoreRateLimit;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAutoMapper(Assembly.GetEntryAssembly());
+
+builder.Services.ConfigureRateLimiting();
+
 // Add services to the container.
 builder.Services.ConfigureCors();
-builder.Services.AddApplicacionServices();
+builder.Services.AddAplicacionServices();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -21,6 +27,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseIpRateLimiting();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

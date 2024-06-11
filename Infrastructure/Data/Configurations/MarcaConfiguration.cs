@@ -13,8 +13,8 @@ public class MarcaConfiguration : IEntityTypeConfiguration<Marca>
 
 
         builder
-            .Property(m => m.Id)
-            .IsRequired();
+            .HasKey(m => m.Id)
+            .HasName("Marca_pkey");
 
         
         builder
