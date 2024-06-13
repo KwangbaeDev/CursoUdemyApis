@@ -13,8 +13,8 @@ public class ProductoConfiguration : IEntityTypeConfiguration<Producto>
 
 
         builder
-            .Property(p => p.Id)
-            .IsRequired();
+            .HasKey(p => p.Id)
+            .HasName("Producto_pkey");
 
         
         builder
@@ -28,9 +28,9 @@ public class ProductoConfiguration : IEntityTypeConfiguration<Producto>
             .HasColumnType("decimal(18,2)");
 
         
-        builder
-            .Property(p => p.FechaCreacion)
-            .HasColumnType("timestamp");
+        // builder
+        //     .Property(p => p.FechaCreacion)
+        //     .HasColumnType("timestamp");
 
 
         builder

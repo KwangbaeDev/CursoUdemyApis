@@ -12,8 +12,9 @@ builder.Services.ConfigureRateLimiting();                               // LLama
 
 // Add services to the container.
 builder.Services.ConfigureCors();                                       //
-builder.Services.AddAplicacionServices();                               // LLamando a los servicios de los repositorios.
-builder.Services.ConfigureApiVersioning();                              // Llamando al servicio Versionado.
+builder.Services.AddAplicacionServices();                               // LLamando a los servicios de los repositorios de ApplicationServiceExtensions.
+builder.Services.ConfigureApiVersioning();                              // Llamando al servicio Versionado de ApplicationServiceExtensions.
+builder.Services.AddJwt(builder.Configuration);                         // LLamando al servicio para Tokens de ApplicationServiceExtensions.
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -31,7 +32,7 @@ builder.Services.AddControllers(options =>
     options.ReturnHttpNotAcceptable = true;                             // Envia un mensaje de error al no soportar el formato solicitado.
 }).AddXmlSerializerFormatters();                                        // Se especifica el formato aceptado
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen();   
 
 var app = builder.Build();
 
@@ -53,7 +54,8 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<TiendaContext>();
         await context.Database.MigrateAsync();
-        await TiendaContextSeed.SeedAsync(context, loggerFactory);
+        await TiendaContextSeed.SeedAsync(context, loggerFactory);               // Llamada a los metodos.
+        await TiendaContextSeed.SeedRolesAsync(context, loggerFactory);
     }
     catch (Exception ex)
     {
@@ -65,6 +67,8 @@ using (var scope = app.Services.CreateScope())
 app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

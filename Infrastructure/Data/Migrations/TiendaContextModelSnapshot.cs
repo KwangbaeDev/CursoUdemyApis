@@ -35,7 +35,8 @@ namespace Infrastructure.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("Categoria_pkey");
 
                     b.ToTable("Categoria", (string)null);
                 });
@@ -53,7 +54,8 @@ namespace Infrastructure.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("Marca_pkey");
 
                     b.ToTable("Marca", (string)null);
                 });
@@ -83,13 +85,91 @@ namespace Infrastructure.Data.Migrations
                     b.Property<decimal>("Precio")
                         .HasColumnType("decimal(18,2)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("Producto_pkey");
 
                     b.HasIndex("CategoriaId");
 
                     b.HasIndex("MarcaId");
 
                     b.ToTable("Producto", (string)null);
+                });
+
+            modelBuilder.Entity("Core.Entities.Rol", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id")
+                        .HasName("Rol_pkey");
+
+                    b.ToTable("Rol", (string)null);
+                });
+
+            modelBuilder.Entity("Core.Entities.Usuario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApellidoMaterno")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ApellidoPaterno")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Nombres")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id")
+                        .HasName("Usuario_pkey");
+
+                    b.ToTable("Usuario", (string)null);
+                });
+
+            modelBuilder.Entity("Core.Entities.UsuariosRoles", b =>
+                {
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RolId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UsuarioId", "RolId");
+
+                    b.HasIndex("RolId");
+
+                    b.ToTable("UsuariosRoles");
                 });
 
             modelBuilder.Entity("Core.Entities.Producto", b =>
@@ -111,6 +191,25 @@ namespace Infrastructure.Data.Migrations
                     b.Navigation("Marca");
                 });
 
+            modelBuilder.Entity("Core.Entities.UsuariosRoles", b =>
+                {
+                    b.HasOne("Core.Entities.Rol", "Rol")
+                        .WithMany("UsuariosRoles")
+                        .HasForeignKey("RolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Entities.Usuario", "Usuario")
+                        .WithMany("UsuariosRoles")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Rol");
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("Core.Entities.Categoria", b =>
                 {
                     b.Navigation("Productos");
@@ -119,6 +218,16 @@ namespace Infrastructure.Data.Migrations
             modelBuilder.Entity("Core.Entities.Marca", b =>
                 {
                     b.Navigation("Productos");
+                });
+
+            modelBuilder.Entity("Core.Entities.Rol", b =>
+                {
+                    b.Navigation("UsuariosRoles");
+                });
+
+            modelBuilder.Entity("Core.Entities.Usuario", b =>
+                {
+                    b.Navigation("UsuariosRoles");
                 });
 #pragma warning restore 612, 618
         }

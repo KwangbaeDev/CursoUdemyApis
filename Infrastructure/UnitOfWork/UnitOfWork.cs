@@ -10,6 +10,8 @@ public class UnitOfWork : IUnitOfWork , IDisposable
     private IProductoRepository _productos;
     private IMarcaRepository _marcas;
     private ICategoriaRepository _categorias;
+    private IUsuarioRepository _usuario;
+    private IRolRepository _roles;
 
     public UnitOfWork(TiendaContext context)
     {
@@ -50,6 +52,31 @@ public class UnitOfWork : IUnitOfWork , IDisposable
             return _productos;
         }
     }
+
+    public IUsuarioRepository Usuarios
+    {
+        get
+        {
+            if (_usuario == null)
+            {
+                _usuario = new UsuarioRepository(_context);
+            }
+            return _usuario;
+        }
+    }
+
+    public IRolRepository Roles
+    {
+        get
+        {
+            if (_roles == null)
+            {
+                _roles = new RolRepository(_context);
+            }
+            return _roles;
+        }
+    }
+
     public async Task<int> SaveAsync()
     {
         return await _context.SaveChangesAsync();

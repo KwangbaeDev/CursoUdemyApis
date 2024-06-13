@@ -42,7 +42,14 @@ public class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
                 j => j
                     .HasOne(ur => ur.Rol)
                     .WithMany(r => r.UsuariosRoles)
-                    .HasForeignKey(ur => ur.RolId)
-            );
+                    .HasForeignKey(ur => ur.RolId),
+                j => j
+                    .HasOne(ur => ur.Usuario)
+                    .WithMany(u => u.UsuariosRoles)
+                    .HasForeignKey(ur => ur.UsuarioId),
+                j =>
+                {
+                    j.HasKey(ur => new { ur.UsuarioId, ur.RolId});
+                });
     }
 }
