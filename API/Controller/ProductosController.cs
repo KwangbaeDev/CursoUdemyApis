@@ -3,10 +3,12 @@ using API.Helpers;
 using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controller;
 
+[Authorize(Roles = "Administrador")]  
 public class ProductosController : BaseApiController
 {
     private readonly IUnitOfWork _unitOfWork;

@@ -1,12 +1,14 @@
 using API.DTOs;
 using AutoMapper;
 using Core.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controller;
 
 [ApiVersion("1.0", Deprecated = true)]                 // Ignora la version.
 [ApiVersion("1.1")]                                    // Indicacion del versionado. 
+[Authorize(Roles = "Administrador")]                        
 // [Route("api/v{v:apiVersion}/datosproductos")]       // Configuracion de la ruta del controlador para el versionado por url.
 public class DatosProductosController : BaseApiController
 {
@@ -31,7 +33,7 @@ public class DatosProductosController : BaseApiController
 
 
     [HttpGet]
-    [MapToApiVersion("1")]   // Se especifica la version que se quiere utilizar.
+    [MapToApiVersion("1.1")]   // Se especifica la version que se quiere utilizar.
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IEnumerable<ProductoDTO>>> GetProductoDesglosados()

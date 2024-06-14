@@ -51,5 +51,10 @@ public class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
                 {
                     j.HasKey(ur => new { ur.UsuarioId, ur.RolId});
                 });
+        
+        builder
+            .HasMany(u => u.RefreshTokens)
+            .WithOne(rt => rt.Usuario)
+            .HasForeignKey(u => u.UsuarioId);
     }
 }
