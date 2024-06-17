@@ -150,6 +150,51 @@ public class UserService : IUserService
         return $"Credenciales incorrectas para el usuario {usuario.Username}";
     }
 
+
+    public async Task<DatosUsuarioDTO> RefreshTokenAsync(string refreshToken)
+    {
+        var datosUsuarioDTO = new DatosUsuarioDTO();
+
+        var usuario = await _unitOfWork.Usuarios
+                                    .GetByRefreshTokenAsync(refreshToken);
+
+        if (usuario == null)
+        {
+            datosUsuarioDTO.EstaAutenticado = false;
+            datosUsuarioDTO.Mensaje = $"El token no pertenece a ningun usuario.";
+            return datosUsuarioDTO;
+        }
+
+        var refreshTokenBd = usuario.RefreshTokens.Single(rt => rt.Token == refreshToken);
+
+        if (!refreshTokenBd.IsActive)
+        {
+            datosUsuarioDTO.EstaAutenticado = false;
+            datosUsuarioDTO.Mensaje = $"El token no esta activo.";
+            return datosUsuarioDTO;
+        }
+
+        //Revocamos el Refresh Token actual y
+        refreshTokenBd.Revoked = DateTime.UtcNow;
+        //generamos un nuevo Refresh Token y lo guardamos en la Base de Datos
+        var newRefreshToken = CreateRefreshToken();
+        usuario.RefreshTokens.Add(newRefreshToken);
+        _unitOfWork.Usuarios.Update(usuario);
+        await _unitOfWork.SaveAsync();
+        //Generamos un nuevo Json Web Token
+        datosUsuarioDTO.EstaAutenticado = true;
+        JwtSecurityToken jwtSecurityToken = CreateJwtToken(usuario);
+        datosUsuarioDTO.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+        datosUsuarioDTO.Email = usuario.Email;
+        datosUsuarioDTO.UserName = usuario.Username;
+        datosUsuarioDTO.Roles = usuario.Roles
+                                        .Select(r => r.Nombre)
+                                        .ToList();
+        datosUsuarioDTO.RefreshToken = newRefreshToken.Token;
+        datosUsuarioDTO.RefreshTokenExpiration = newRefreshToken.Expires;
+        return datosUsuarioDTO;
+    }
+
     private RefreshToken CreateRefreshToken()
     {
         var randomNumber = new byte[32];
