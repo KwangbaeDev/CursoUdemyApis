@@ -1,5 +1,6 @@
 using System.Text;
 using API.Helpers;
+using API.Helpers.Errors;
 using API.Services;
 using AspNetCoreRateLimit;
 using Core.Entities;
@@ -116,5 +117,27 @@ public static class ApplicationServiceExtensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]))
                 };
             });
+    }
+
+
+    // Accediendo al ModelState para manejar validaciones.
+    public static void AddValidationErrors(this IServiceCollection services)
+    {
+        services.Configure<ApiBehaviorOptions>(options =>
+        {
+            options.InvalidModelStateResponseFactory = actionContext =>
+            {
+                var errors = actionContext.ModelState.Where(me => me.Value.Errors.Count>0)   //busca si hay errores.
+                                                .SelectMany(me => me.Value.Errors)           //se utiliza SelecMany ya que Errors es una coleccion de errores.
+                                                .Select(me => me.ErrorMessage).ToArray();
+
+                var errorResponse = new ApiValidation()
+                {
+                    Errors = errors
+                };
+
+                return new BadRequestObjectResult(errorResponse);
+            };
+        });
     }
 }

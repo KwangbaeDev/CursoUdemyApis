@@ -1,5 +1,6 @@
 using API.DTOs;
 using API.Helpers;
+using API.Helpers.Errors;
 using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
@@ -44,7 +45,7 @@ public class ProductosController : BaseApiController
     public async Task<ActionResult<ProductoDTO>> Get(int id)
     {
         var producto = await _unitOfWork.Productos.GetByIdAsync(id);
-        if (producto == null) return NotFound();
+        if (producto == null) return NotFound(new ApiResponse(404, "El producto solicitado no existe."));
 
         return _mapper.Map<ProductoDTO>(producto);
     }
@@ -60,7 +61,7 @@ public class ProductosController : BaseApiController
         
         _unitOfWork.Productos.Add(producto);
         await _unitOfWork.SaveAsync();
-        if (producto == null) return BadRequest();
+        if (producto == null) return BadRequest(new ApiResponse(400));
 
         productoDTO.Id = producto.Id;
         return CreatedAtAction(nameof(Post), new {id=productoDTO.Id}, productoDTO);
@@ -73,7 +74,10 @@ public class ProductosController : BaseApiController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ProductoAddUpdateDTO>> Put(int id, [FromBody] ProductoAddUpdateDTO productoDTO)
     {
-        if (productoDTO == null) return NotFound();
+        if (productoDTO == null) return NotFound(new ApiResponse(404, "El producto solicitado no existe."));
+
+        var productoBd = await _unitOfWork.Productos.GetByIdAsync(id);
+        if (productoBd == null) return NotFound(new ApiResponse(404, "El producto solicitado no existe."));
 
         var producto = _mapper.Map<Producto>(productoDTO);
 
@@ -91,7 +95,7 @@ public class ProductosController : BaseApiController
     public async Task<IActionResult> Delete(int id)
     {
         var producto = await _unitOfWork.Productos.GetByIdAsync(id);
-        if (producto == null) return NotFound();
+        if (producto == null) return NotFound(new ApiResponse(404, "El producto solicitado no existe."));
 
         _unitOfWork.Productos.Remove(producto);
         await _unitOfWork.SaveAsync();

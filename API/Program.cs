@@ -1,10 +1,20 @@
 using System.Reflection;
 using API.Extensions;
+using API.Helpers.Errors;
 using AspNetCoreRateLimit;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var logger = new LoggerConfiguration()
+                    .ReadFrom.Configuration(builder.Configuration)
+                    .Enrich.FromLogContext()
+                    .CreateLogger();
+
+//builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
 
 builder.Services.AddAutoMapper(Assembly.GetEntryAssembly());            // LLamando al servicio AutoMapper.
 
@@ -31,6 +41,9 @@ builder.Services.AddControllers(options =>
     options.RespectBrowserAcceptHeader = true;                          // Habilita el cambio de formato.
     options.ReturnHttpNotAcceptable = true;                             // Envia un mensaje de error al no soportar el formato solicitado.
 }).AddXmlSerializerFormatters();                                        // Se especifica el formato aceptado
+
+builder.Services.AddValidationErrors();                                 // LLamando al servicio de Validacion de ApplicationServiceExtensions.
+                                      
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();   
 
@@ -38,6 +51,10 @@ var app = builder.Build();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
+
+app.UseMiddleware<ExceptionMiddleware>();                                //Usando el Middleware para manejar las excepciones de mandera global.
+
+app.UseStatusCodePagesWithReExecute("/errors/{0}");                      // Para validacion de recursos no existentes(endpoints, etc) que se llama desde el controlador errors.
 
 app.UseIpRateLimiting();                                                 // Usando el Ratelimit.
 
@@ -62,8 +79,8 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        var logger = loggerFactory.CreateLogger<Program>();
-        logger.LogError(ex, "Ocurrio un error durante la migración");
+        var _logger = loggerFactory.CreateLogger<Program>();
+        _logger.LogError(ex, "Ocurrio un error durante la migración");
     }
 }
 // Usando las politicas Cros.
