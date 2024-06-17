@@ -36,6 +36,9 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
+
 app.UseIpRateLimiting();                                                 // Usando el Ratelimit.
 
 // Configure the HTTP request pipeline.
