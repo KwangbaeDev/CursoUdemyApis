@@ -6,6 +6,10 @@ public class ApiResponse
     public int StatusCode { get; set; }
     public string Message { get; set; }
 
+    public ApiResponse()
+    { 
+    }
+
 
     public ApiResponse(int statusCode, string message = null)
     {
@@ -21,7 +25,8 @@ public class ApiResponse
            401 => "Usuario no autorizado.",
            404 => "El recurso que has intentado solicitar no existe.",
            405 => "Este método HTTP no está permitido en el servidor.",
-           500 => "Error en el servidor. No eres tu, soy yo. Comunícate con el administrador XD." 
+           500 => "Error en el servidor. No eres tu, soy yo. Comunícate con el administrador XD.",
+           _ => "Error desconocido"
         };
     }
 }

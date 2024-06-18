@@ -26,7 +26,7 @@ builder.Services.AddAplicacionServices();                               // LLama
 builder.Services.ConfigureApiVersioning();                              // Llamando al servicio Versionado de ApplicationServiceExtensions.
 builder.Services.AddJwt(builder.Configuration);                         // LLamando al servicio para Tokens de ApplicationServiceExtensions.
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");     //crea la cadena de conexion a la base de datos.
 
 builder.Services.AddDbContext<TiendaContext>(options =>
 {
